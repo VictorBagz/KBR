@@ -4,7 +4,7 @@ import { Match } from '../types';
 import { Calendar, MapPin, Filter, ChevronLeft, ChevronRight, Trophy, Loader2 } from 'lucide-react';
 import { fetchAllMatches } from '../services/liveMatchService';
 
-const COMPETITIONS = ['All', 'URC', 'Premiership', 'Top 14', 'Super Rugby', 'Champions Cup'];
+const COMPETITIONS = ['All', 'Uganda Cup', 'National League', 'National 7s', 'National Friendlies', 'Off-season Friendly', 'Victoria Cup', 'Elgon Cup', 'Coronation 7s', 'University League'];
 
 export const FixturesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'fixtures' | 'results'>('fixtures');

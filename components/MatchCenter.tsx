@@ -86,14 +86,22 @@ export const MatchCenter: React.FC<MatchCenterProps> = ({ onNavigate }) => {
   // Helper to render events for a side
   const renderEvents = (side: 'home' | 'away') => {
     if (!liveMatch?.events) return null;
-    return liveMatch.events
+    // Sort events by match_time descending (newest/most recent first)
+    const sortedEvents = [...liveMatch.events]
       .filter(e => e.team_side === side)
-      .map(e => (
-        <div key={e.id} className="text-xs text-gray-400 whitespace-nowrap animate-in slide-in-from-bottom-1">
-           <span className="text-white font-medium">{e.player_name}</span> 
-           <span className="opacity-70"> {e.match_time} ({e.event_type === 'CONVERSION' ? 'Con' : e.event_type === 'PENALTY' ? 'Pen' : 'Try'})</span>
-        </div>
-      ));
+      .sort((a, b) => {
+        // Parse time strings to compare numerically
+        const timeA = parseInt(a.match_time?.split(':')[0] || '0');
+        const timeB = parseInt(b.match_time?.split(':')[0] || '0');
+        return timeB - timeA;
+      });
+    
+    return sortedEvents.map(e => (
+      <div key={e.id} className="text-xs text-gray-400 animate-in slide-in-from-bottom-1 max-w-full px-1">
+         <span className="text-white font-medium truncate block">{e.player_name}</span> 
+         <span className="opacity-70 text-[10px]">{e.match_time} ({e.event_type === 'CONVERSION' ? 'Con' : e.event_type === 'PENALTY' ? 'Pen' : 'Try'})</span>
+      </div>
+    ));
   };
 
   // Determine if the match is actually "Live" for the viewer
@@ -130,15 +138,15 @@ export const MatchCenter: React.FC<MatchCenterProps> = ({ onNavigate }) => {
                   <div className="grid grid-cols-3 gap-4 mb-8 relative z-10">
                     
                     {/* Home Team */}
-                    <div className="flex flex-col items-center">
-                       <div className="w-16 h-16 md:w-24 md:h-24 bg-white rounded-full flex items-center justify-center p-2 mb-4 shadow-lg transform hover:scale-105 transition-transform overflow-hidden">
+                    <div className="flex flex-col items-center min-w-0">
+                       <div className="w-16 h-16 md:w-24 md:h-24 bg-white rounded-full flex items-center justify-center p-2 mb-4 shadow-lg transform hover:scale-105 transition-transform overflow-hidden flex-shrink-0">
                           {liveMatch.homeTeamLogo ? (
                              <img src={liveMatch.homeTeamLogo} alt={liveMatch.homeTeam} className="w-full h-full object-contain" />
                           ) : (
                              <span className="text-rugby-950 font-black text-lg md:text-2xl">{liveMatch.homeTeam.substring(0,3).toUpperCase()}</span>
                           )}
                        </div>
-                       <h3 className="text-xl md:text-3xl font-bold text-white text-center break-words w-full leading-tight">{liveMatch.homeTeam}</h3>
+                       <h3 className="text-sm md:text-2xl font-bold text-white text-center line-clamp-2 w-full">{liveMatch.homeTeam}</h3>
                        
                        {/* Home Scorers List */}
                        <div className="mt-4 flex flex-col items-center gap-1 max-h-32 overflow-y-auto w-full custom-scrollbar">
@@ -152,7 +160,7 @@ export const MatchCenter: React.FC<MatchCenterProps> = ({ onNavigate }) => {
                          {liveMatch.homeScore} - {liveMatch.awayScore}
                        </div>
                        {liveMatch.commentary && (
-                         <div className="mt-6 px-4 py-2 bg-rugby-950/80 rounded-lg text-xs md:text-sm text-gray-300 border border-rugby-700 font-medium text-center w-full max-w-xs animate-in fade-in">
+                         <div className="mt-6 px-3 py-2 bg-rugby-950/80 rounded-lg text-xs md:text-sm text-gray-300 border border-rugby-700 font-medium text-center w-full max-w-sm animate-in fade-in break-words whitespace-normal">
                             <span className="text-rugby-accent font-bold uppercase text-[10px] block mb-1">Live Update</span>
                             {liveMatch.commentary}
                          </div>
@@ -160,15 +168,15 @@ export const MatchCenter: React.FC<MatchCenterProps> = ({ onNavigate }) => {
                     </div>
 
                     {/* Away Team */}
-                    <div className="flex flex-col items-center">
-                       <div className="w-16 h-16 md:w-24 md:h-24 bg-white rounded-full flex items-center justify-center p-2 mb-4 shadow-lg transform hover:scale-105 transition-transform overflow-hidden">
+                    <div className="flex flex-col items-center min-w-0">
+                       <div className="w-16 h-16 md:w-24 md:h-24 bg-white rounded-full flex items-center justify-center p-2 mb-4 shadow-lg transform hover:scale-105 transition-transform overflow-hidden flex-shrink-0">
                           {liveMatch.awayTeamLogo ? (
                              <img src={liveMatch.awayTeamLogo} alt={liveMatch.awayTeam} className="w-full h-full object-contain" />
                           ) : (
                              <span className="text-rugby-950 font-black text-lg md:text-2xl">{liveMatch.awayTeam.substring(0,3).toUpperCase()}</span>
                           )}
                        </div>
-                       <h3 className="text-xl md:text-3xl font-bold text-white text-center break-words w-full leading-tight">{liveMatch.awayTeam}</h3>
+                       <h3 className="text-sm md:text-2xl font-bold text-white text-center line-clamp-2 w-full">{liveMatch.awayTeam}</h3>
                        
                        {/* Away Scorers List */}
                        <div className="mt-4 flex flex-col items-center gap-1 max-h-32 overflow-y-auto w-full custom-scrollbar">
@@ -210,7 +218,14 @@ export const MatchCenter: React.FC<MatchCenterProps> = ({ onNavigate }) => {
             <div className="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-grow">
               {upcomingFixtures.length > 0 ? (
                 upcomingFixtures.map((match) => (
-                  <div key={match.id} className="bg-rugby-900/50 p-4 rounded-lg border border-rugby-800 hover:border-rugby-600 transition-colors cursor-pointer group">
+                  <div 
+                    key={match.id} 
+                    onClick={() => {
+                      // Load the clicked fixture into live match view (optional enhancement)
+                      console.log('Fixture clicked:', match.id);
+                    }}
+                    className="bg-rugby-900/50 p-4 rounded-lg border border-rugby-800 hover:border-rugby-600 hover:bg-rugby-900 transition-all cursor-pointer group active:scale-95 transform"
+                  >
                     <div className="flex justify-between items-center text-xs text-gray-500 mb-2">
                       <span className="uppercase font-semibold">{match.competition}</span>
                       <span>{match.date}</span>
@@ -230,7 +245,7 @@ export const MatchCenter: React.FC<MatchCenterProps> = ({ onNavigate }) => {
 
                     <div className="mt-3 flex justify-between items-center">
                       <div className="px-2 py-1 bg-rugby-950 rounded text-xs text-gray-400 truncate max-w-[120px]">{match.venue}</div>
-                      <div className="text-sm font-bold text-rugby-accent bg-blue-900/20 px-2 py-1 rounded">{match.time}</div>
+                      <div className="text-sm font-bold text-rugby-accent bg-blue-900/20 px-2 py-1 rounded group-hover:bg-blue-900/40 transition-colors">{match.time}</div>
                     </div>
                   </div>
                 ))

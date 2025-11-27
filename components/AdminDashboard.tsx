@@ -5,6 +5,7 @@ import { fetchNews, createNews, updateNews, deleteNews } from '../services/newsS
 import { fetchTeams, createTeam, updateTeam, deleteTeam } from '../services/teamService';
 import { getFeaturedLiveMatch, updateLiveMatch, createLiveMatchEntry, addScoringEvent, deleteMatchEvent, fetchAllMatches, createMatch, deleteMatch } from '../services/liveMatchService';
 import { uploadContentImage } from '../services/storageService';
+import { supabase } from '../services/supabaseClient';
 import { NewsItem, Team, LiveMatchDB, MatchEvent, Match } from '../types';
 
 interface AdminDashboardProps {
@@ -85,9 +86,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
 
   // --- Helpers for Time ---
   const parseSeconds = (timeStr: string) => {
-    if (!timeStr.includes(':')) return parseInt(timeStr) || 0;
-    const [mins, secs] = timeStr.split(':').map(Number);
-    return (mins * 60) + (secs || 0);
+    if (!timeStr) return 0;
+    // Handle both MM:SS and HH:MM formats
+    const parts = timeStr.split(':').map(p => parseInt(p) || 0);
+    if (parts.length === 2) {
+      const [mins, secs] = parts;
+      return (mins * 60) + (secs || 0);
+    }
+    // Fallback for non-formatted input
+    return parseInt(timeStr) || 0;
   };
 
   const formatSeconds = (totalSeconds: number) => {
@@ -203,16 +210,90 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
   const handleEndMatch = async () => {
     setTimerRunning(false);
     if (liveMatch) {
-      await updateLiveMatch(liveMatch.id, { 
-        status: 'FINISHED', 
-        match_time: formatSeconds(timerSeconds) 
-      });
-      setLiveMatch({...liveMatch, status: 'FINISHED'});
+      setSavingLive(true);
+      try {
+        // Save match as FINISHED with final scores and time
+        await updateLiveMatch(liveMatch.id, { 
+          status: 'FINISHED', 
+          match_time: formatSeconds(timerSeconds),
+          home_score: liveMatch.home_score,
+          away_score: liveMatch.away_score
+        });
+        
+        // Update UI to show match finished
+        setLiveMatch({...liveMatch, status: 'FINISHED'});
+        
+        // Reset timer and controls for next match
+        setTimerSeconds(0);
+        setMatchTime('00:00');
+        setCommentary('');
+        setScorerName('');
+        setMatchPeriod('First Half');
+        setLiveSetupForm({ home_team_id: '', away_team_id: '', venue: '', competition: '' });
+        
+        alert('Match finished! Results saved.');
+      } catch (e) {
+        console.error(e);
+        alert('Failed to end match');
+      } finally {
+        setSavingLive(false);
+      }
     }
   };
 
   const handleUpdatePeriod = async (period: string) => {
     setMatchPeriod(period);
+  };
+
+  const handleResetMatch = async () => {
+    if (!liveMatch) return;
+    if (!window.confirm('Are you sure? This will reset all scores and events for this match.')) return;
+
+    setSavingLive(true);
+    try {
+      // Reset match data in database
+      await updateLiveMatch(liveMatch.id, {
+        status: 'UPCOMING',
+        match_time: '00:00',
+        home_score: 0,
+        away_score: 0,
+        commentary: ''
+      });
+
+      // Delete all events associated with this match
+      const { error } = await supabase
+        .from('match_events')
+        .delete()
+        .eq('live_match_id', liveMatch.id);
+
+      if (error) throw error;
+
+      // Reset UI state
+      setLiveMatch({
+        ...liveMatch,
+        status: 'UPCOMING',
+        match_time: '00:00',
+        home_score: 0,
+        away_score: 0,
+        commentary: '',
+        events: []
+      });
+
+      // Reset all controls
+      setTimerRunning(false);
+      setTimerSeconds(0);
+      setMatchTime('00:00');
+      setCommentary('');
+      setScorerName('');
+      setMatchPeriod('First Half');
+
+      alert('Match reset successfully!');
+    } catch (e) {
+      console.error(e);
+      alert('Failed to reset match');
+    } finally {
+      setSavingLive(false);
+    }
   };
 
   // --- Handlers: Live Match Scoring ---
@@ -616,6 +697,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
                         
                         <button onClick={handleEndMatch} className="flex items-center gap-2 bg-rugby-800 hover:bg-red-900/50 hover:text-red-400 text-gray-300 border border-rugby-700 hover:border-red-900 px-4 py-2 rounded-lg font-bold ml-2 transition-all">
                            <Square size={18} fill="currentColor" /> End
+                        </button>
+
+                        <button 
+                          disabled={savingLive}
+                          onClick={handleResetMatch} 
+                          className="flex items-center gap-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 hover:text-red-300 border border-red-900/50 hover:border-red-700 px-4 py-2 rounded-lg font-bold ml-2 transition-all disabled:opacity-50"
+                          title="Reset all scores and events"
+                        >
+                           <Undo2 size={18} /> Reset
                         </button>
                       </div>
                   </div>

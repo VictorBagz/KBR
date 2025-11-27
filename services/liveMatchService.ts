@@ -30,14 +30,15 @@ export const getFeaturedLiveMatch = async (): Promise<LiveMatchDB | null> => {
       .maybeSingle();
       
       if (backup && backup.events) {
-        backup.events.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        // Sort events by creation time, newest first
+        backup.events.sort((a: any, b: any) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
       }
       return backup as LiveMatchDB;
   }
 
-  // Sort events by time if they exist
+  // Sort events by creation time, newest first
   if (data && data.events) {
-    data.events.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    data.events.sort((a: any, b: any) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
   }
 
   return data as LiveMatchDB;
@@ -116,16 +117,16 @@ export const addScoringEvent = async (
   event: Omit<MatchEvent, 'id' | 'live_match_id' | 'team_side'>
 ) => {
   
-  // 1. Insert the event
+  // 1. Insert the event with explicit team_side
   const { error: eventError } = await supabase
     .from('match_events')
     .insert([{
       live_match_id: matchId,
       team_side: side,
-      player_name: event.player_name,
+      player_name: event.player_name || 'Unknown',
       event_type: event.event_type,
-      points: event.points,
-      match_time: event.match_time
+      points: event.points || 0,
+      match_time: event.match_time || '00:00'
     }]);
 
   if (eventError) throw eventError;
