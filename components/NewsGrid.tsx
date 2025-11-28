@@ -43,7 +43,7 @@ const MOCK_NEWS: NewsItem[] = [
   }
 ];
 
-export const NewsGrid: React.FC = () => {
+export const NewsGrid: React.FC<{ onNavigate: (page: 'home' | 'news' | 'fixtures' | 'profile' | 'admin') => void }> = ({ onNavigate }) => {
   const [news, setNews] = useState<NewsItem[]>(MOCK_NEWS);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export const NewsGrid: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-end mb-8">
           <h2 className="text-3xl font-bold text-white">Latest Headlines</h2>
-          <span className="text-rugby-accent text-sm font-medium cursor-pointer">View All News &rarr;</span>
+          <span onClick={() => onNavigate('news')} className="text-rugby-accent text-sm font-medium cursor-pointer hover:underline transition-all">View All News &rarr;</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -3,6 +3,7 @@ import { Navbar } from './components/Navbar';
 import { HeroNews } from './components/HeroNews';
 import { NewsGrid } from './components/NewsGrid';
 import { NewsPage } from './components/NewsPage';
+import { ArticlePage } from './components/ArticlePage';
 import { MatchCenter } from './components/MatchCenter';
 import { FixturesPage } from './components/FixturesPage';
 import { FantasyCTA } from './components/FantasyCTA';
@@ -12,14 +13,18 @@ import { ProfilePage } from './components/ProfilePage';
 import { AdminDashboard } from './components/AdminDashboard';
 import { AuthProvider } from './context/AuthContext';
 
-type Page = 'home' | 'news' | 'fixtures' | 'profile' | 'admin';
+type Page = 'home' | 'news' | 'fixtures' | 'profile' | 'admin' | 'article';
 
 const AppContent: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
+  const [currentArticleId, setCurrentArticleId] = useState<string | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  const handleNavigate = (page: Page) => {
+  const handleNavigate = (page: Page, articleId?: string) => {
     setCurrentPage(page);
+    if (articleId) {
+      setCurrentArticleId(articleId);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -37,14 +42,17 @@ const AppContent: React.FC = () => {
       <main>
         {currentPage === 'home' && (
           <>
-            <HeroNews />
-            <NewsGrid />
+            <HeroNews onNavigate={handleNavigate} />
+            <NewsGrid onNavigate={handleNavigate} />
             <MatchCenter onNavigate={handleNavigate} />
             <FantasyCTA />
           </>
         )}
         {currentPage === 'news' && (
-          <NewsPage />
+          <NewsPage onNavigate={handleNavigate} />
+        )}
+        {currentPage === 'article' && currentArticleId && (
+          <ArticlePage articleId={currentArticleId} onNavigate={handleNavigate} />
         )}
         {currentPage === 'fixtures' && (
           <FixturesPage />
@@ -57,7 +65,7 @@ const AppContent: React.FC = () => {
         )}
       </main>
       
-      {currentPage !== 'admin' && <Footer />}
+      {currentPage !== 'admin' && <Footer onNavigate={handleNavigate} />}
       
       <AuthModal 
         isOpen={isAuthModalOpen} 

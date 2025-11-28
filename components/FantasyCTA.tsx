@@ -54,11 +54,11 @@ export const FantasyCTA: React.FC = () => {
                {/* Mock Player Card */}
                <div className="bg-rugby-800 border-l-4 border-green-500 p-3 rounded shadow-lg flex items-center justify-between transform translate-x-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-600 rounded-full overflow-hidden">
-                      <img src="https://picsum.photos/100/100?random=11" alt="Player" />
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center font-bold text-white text-sm">
+                      B
                     </div>
                     <div>
-                      <div className="text-white font-bold text-sm">Dupont (C)</div>
+                      <div className="text-white font-bold text-sm">Baguma (C)</div>
                       <div className="text-xs text-gray-400">Scrum Half</div>
                     </div>
                   </div>
@@ -67,11 +67,11 @@ export const FantasyCTA: React.FC = () => {
 
                <div className="bg-rugby-800 border-l-4 border-blue-500 p-3 rounded shadow-lg flex items-center justify-between transform -translate-x-2">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-600 rounded-full overflow-hidden">
-                       <img src="https://picsum.photos/100/100?random=12" alt="Player" />
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-full flex items-center justify-center font-bold text-white text-sm">
+                       G
                     </div>
                     <div>
-                      <div className="text-white font-bold text-sm">Etzebeth</div>
+                      <div className="text-white font-bold text-sm">Ggonya</div>
                       <div className="text-xs text-gray-400">Lock</div>
                     </div>
                   </div>
@@ -80,11 +80,11 @@ export const FantasyCTA: React.FC = () => {
 
                <div className="bg-rugby-800 border-l-4 border-gray-500 p-3 rounded shadow-lg flex items-center justify-between transform translate-x-2 opacity-80">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-600 rounded-full overflow-hidden">
-                       <img src="https://picsum.photos/100/100?random=13" alt="Player" />
+                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-700 rounded-full flex items-center justify-center font-bold text-white text-sm">
+                       A
                     </div>
                     <div>
-                      <div className="text-white font-bold text-sm">Russell</div>
+                      <div className="text-white font-bold text-sm">Ayera</div>
                       <div className="text-xs text-gray-400">Fly Half</div>
                     </div>
                   </div>

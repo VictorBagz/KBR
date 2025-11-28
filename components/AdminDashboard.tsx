@@ -7,9 +7,10 @@ import { getFeaturedLiveMatch, updateLiveMatch, createLiveMatchEntry, addScoring
 import { uploadContentImage } from '../services/storageService';
 import { supabase } from '../services/supabaseClient';
 import { NewsItem, Team, LiveMatchDB, MatchEvent, Match } from '../types';
+import { RichTextEditor } from './RichTextEditor';
 
 interface AdminDashboardProps {
-  onNavigate: (page: any) => void;
+  onNavigate: (page: 'home' | 'news' | 'fixtures' | 'profile' | 'admin' | 'article') => void;
 }
 
 type Tab = 'news' | 'teams' | 'live' | 'fixtures';
@@ -44,8 +45,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
     title: '',
     summary: '',
     image_url: '',
-    category: 'Premiership',
-    author: 'Admin'
+    category: 'Uganda Cup',
+    author: 'Admin',
+    featured: false,
+    fullContent: ''
   });
   const [newsFile, setNewsFile] = useState<File | null>(null);
 
@@ -442,7 +445,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
   };
 
   const resetForms = () => {
-    setNewsForm({ title: '', summary: '', image_url: '', category: 'Premiership', author: 'Admin' });
+    setNewsForm({ title: '', summary: '', image_url: '', category: 'Ugandas Cup', author: 'Admin', featured: false, fullContent: '' });
     setNewsFile(null);
     setTeamForm({ name: '', category: 'Men', home_ground: '', logo_url: '' });
     setTeamFile(null);
@@ -456,7 +459,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
   };
 
   const handleEditNews = (item: NewsItem) => {
-    setNewsForm({ title: item.title, summary: item.summary, image_url: item.imageUrl, category: item.category, author: item.author });
+    setNewsForm({ title: item.title, summary: item.summary, image_url: item.imageUrl, category: item.category, author: item.author, featured: item.featured || false, fullContent: item.fullContent || '' });
     setNewsFile(null);
     setCurrentId(item.id);
     setIsEditing(true);
@@ -891,12 +894,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
       {/* --- MODAL (News/Teams/Fixtures) --- */}
       {isEditing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
-           <div className="bg-rugby-900 border border-rugby-800 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden my-8">
-              <div className="p-6 border-b border-rugby-800 flex justify-between items-center bg-rugby-950/50">
+           <div className="bg-rugby-900 border border-rugby-800 rounded-2xl w-full max-w-2xl h-[70vh] shadow-2xl overflow-hidden flex flex-col my-8">
+              <div className="p-6 border-b border-rugby-800 flex justify-between items-center bg-rugby-950/50 shrink-0">
                  <h2 className="text-xl font-bold text-white capitalize">{currentId ? 'Edit' : 'Add'} {activeTab === 'news' ? 'Article' : activeTab === 'fixtures' ? 'Fixture' : 'Team'}</h2>
                  <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-white"><X size={24} /></button>
               </div>
-              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
                  {activeTab === 'news' && (
                    <>
                      <div className="space-y-1">
@@ -909,7 +912,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
                      </div>
                      <div className="space-y-1">
                         <label className="text-xs text-gray-400">Category</label>
-                        <select className="w-full bg-rugby-950 p-2 rounded text-white border border-rugby-800" value={newsForm.category} onChange={e=>setNewsForm({...newsForm, category: e.target.value})}><option value="Premiership">Premiership</option><option value="URC">URC</option><option value="Top 14">Top 14</option><option value="Internationals">Internationals</option></select>
+                        <select className="w-full bg-rugby-950 p-2 rounded text-white border border-rugby-800" value={newsForm.category} onChange={e=>setNewsForm({...newsForm, category: e.target.value})}><option value="Ugandas Cup">Ugandas Cup</option><option value="URU">URU</option><option value="International">International</option><option value="National 7s">National 7s</option><option value="National team">National team</option><option value="Transfers">Transfers</option><option value="Pre-season">Pre-season</option></select>
                      </div>
                      <div className="space-y-1">
                         <label className="text-xs text-gray-400">Header Image</label>
@@ -933,6 +936,29 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
                      <div className="space-y-1">
                         <label className="text-xs text-gray-400">Author</label>
                         <input className="w-full bg-rugby-950 p-2 rounded text-white border border-rugby-800" placeholder="Author" value={newsForm.author} onChange={e=>setNewsForm({...newsForm, author: e.target.value})}/>
+                     </div>
+                     <div className="flex items-center gap-3 p-3 bg-rugby-950/50 rounded border border-rugby-800">
+                        <input 
+                          type="checkbox" 
+                          id="featured" 
+                          checked={newsForm.featured || false}
+                          onChange={e=>setNewsForm({...newsForm, featured: e.target.checked})}
+                          className="w-4 h-4 rounded accent-rugby-accent cursor-pointer"
+                        />
+                        <label htmlFor="featured" className="text-xs text-gray-400 cursor-pointer flex-1">
+                          Mark as Featured (will appear as hero on home page)
+                        </label>
+                     </div>
+                     <div className="space-y-1">
+                        <label className="text-xs text-gray-400">Full Article Content</label>
+                        <RichTextEditor 
+                          value={newsForm.fullContent} 
+                          onChange={(content) => setNewsForm({...newsForm, fullContent: content})}
+                          onImageUpload={async (file) => {
+                            // Upload image using your storage service
+                            return await uploadContentImage(file, 'news');
+                          }}
+                        />
                      </div>
                    </>
                  )}
@@ -1064,7 +1090,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
                     </div>
                  )}
 
-                 <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-rugby-800">
+                 <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-rugby-800 sticky bottom-0 bg-rugby-900 shrink-0">
                     <button type="button" onClick={()=>setIsEditing(false)} className="px-4 py-2 text-gray-400 hover:text-white">Cancel</button>
                     <button type="submit" disabled={uploading} className="px-4 py-2 bg-rugby-accent text-white rounded font-bold hover:bg-blue-600 transition-colors flex items-center gap-2">
                       {uploading ? <Loader2 className="animate-spin" size={16}/> : <Save size={16}/>}

@@ -108,7 +108,7 @@ export const MatchCenter: React.FC<MatchCenterProps> = ({ onNavigate }) => {
   const isMatchActive = liveMatch && (liveMatch.status === 'LIVE' || liveMatch.status === 'HALFTIME');
 
   return (
-    <section id="fixtures" className="py-12 bg-rugby-900 border-t border-rugby-800">
+    <section id="match-center-section" className="py-12 bg-rugby-900 border-t border-rugby-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="flex items-center space-x-2 mb-8">

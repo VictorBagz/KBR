@@ -3,13 +3,17 @@ import { NewsItem } from '../types';
 import { PlayCircle, Clock, Filter, Search, ChevronRight, Loader2 } from 'lucide-react';
 import { fetchNews } from '../services/newsService';
 
+interface NewsPageProps {
+  onNavigate?: (page: 'home' | 'news' | 'fixtures' | 'profile' | 'admin' | 'article', articleId?: string) => void;
+}
+
 const MOCK_NEWS: NewsItem[] = [
   {
     id: '1',
     title: 'Smith ruled out of Premiership final after training injury',
     summary: 'The Harlequins fly-half suffered a hamstring setback during Tuesday\'s session, leaving the coaching staff scrambling for a replacement ahead of the big game.',
     imageUrl: 'https://picsum.photos/600/400?random=2',
-    category: 'Premiership',
+    category: 'National team',
     timestamp: '4h ago',
     author: 'Tom Fordyce'
   },
@@ -18,28 +22,37 @@ const MOCK_NEWS: NewsItem[] = [
     title: 'All Blacks squad announcement: 3 shock inclusions',
     summary: 'Scott Robertson has named his first squad for the Rugby Championship with some surprises, including a debutant prop from the Crusaders.',
     imageUrl: 'https://picsum.photos/600/400?random=3',
-    category: 'Internationals',
+    category: 'International',
     timestamp: '6h ago',
     author: 'Rugby Pass'
   },
   {
     id: '3',
     title: 'Video: The try of the century? Watch stunning solo effort',
-    summary: 'From his own try line, the winger beat 7 defenders to score what is being hailed as the greatest solo try in URC history.',
+    summary: 'From his own try line, the winger beat 7 defenders to score what is being hailed as the greatest solo try in URU history.',
     imageUrl: 'https://picsum.photos/600/400?random=4',
-    category: 'URC',
+    category: 'URU',
     timestamp: '8h ago',
     author: 'Staff Writer'
   }
 ];
 
-const CATEGORIES = ['All', 'Internationals', 'Premiership', 'URC', 'Top 14', 'Transfers', 'Super Rugby'];
+const CATEGORIES = ['All', 'Ugandas Cup', 'URU', 'International', 'National 7s', 'National team', 'Transfers', 'Pre-season'];
 
-export const NewsPage: React.FC = () => {
+export const NewsPage: React.FC<NewsPageProps> = ({ onNavigate }) => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [allNews, setAllNews] = useState<NewsItem[]>(MOCK_NEWS);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  const handleArticleClick = (articleId: string) => {
+    if (onNavigate) {
+      sessionStorage.setItem(`article_${articleId}`, JSON.stringify(allNews.find(n => n.id === articleId)));
+      onNavigate('article', articleId);
+    }
+  };
 
   useEffect(() => {
     const getNews = async () => {
@@ -60,6 +73,22 @@ export const NewsPage: React.FC = () => {
     return matchesCategory && matchesSearch;
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredNews.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedNews = filteredNews.slice(startIndex, startIndex + itemsPerPage);
+
+  // Reset to page 1 when filters change
+  const handleCategoryChange = (category: string) => {
+    setActiveCategory(category);
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="bg-rugby-950 min-h-screen pt-8 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -76,7 +105,7 @@ export const NewsPage: React.FC = () => {
               type="text" 
               placeholder="Search news..." 
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="bg-rugby-900 border border-rugby-700 text-white pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-rugby-accent w-full md:w-64 placeholder-gray-500"
             />
             <Search className="absolute left-3 top-2.5 text-gray-500" size={18} />
@@ -88,7 +117,7 @@ export const NewsPage: React.FC = () => {
           {CATEGORIES.map(category => (
             <button
               key={category}
-              onClick={() => setActiveCategory(category)}
+              onClick={() => handleCategoryChange(category)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 activeCategory === category 
                   ? 'bg-rugby-accent text-white shadow-lg shadow-blue-900/50' 
@@ -110,8 +139,8 @@ export const NewsPage: React.FC = () => {
         {/* News Grid */}
         {!loading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredNews.length > 0 ? (
-              filteredNews.map((item) => (
+            {paginatedNews.length > 0 ? (
+              paginatedNews.map((item) => (
                 <article key={item.id} className="group flex flex-col bg-rugby-900 rounded-xl overflow-hidden border border-rugby-800 hover:border-rugby-600 hover:shadow-2xl hover:shadow-blue-900/20 transition-all duration-300">
                   <div className="relative h-56 overflow-hidden">
                     <img 
@@ -146,7 +175,7 @@ export const NewsPage: React.FC = () => {
                       {item.summary}
                     </p>
                     
-                    <div className="mt-auto pt-4 border-t border-rugby-800 flex items-center text-rugby-accent text-sm font-semibold group-hover:translate-x-1 transition-transform cursor-pointer">
+                    <div className="mt-auto pt-4 border-t border-rugby-800 flex items-center text-rugby-accent text-sm font-semibold group-hover:translate-x-1 transition-transform cursor-pointer" onClick={() => handleArticleClick(item.id)}>
                       Read Article <ChevronRight size={16} className="ml-1" />
                     </div>
                   </div>
@@ -168,15 +197,42 @@ export const NewsPage: React.FC = () => {
           </div>
         )}
 
-        {/* Pagination Dummy */}
-        {!loading && filteredNews.length > 0 && (
+        {/* Pagination */}
+        {!loading && filteredNews.length > itemsPerPage && (
           <div className="mt-16 flex justify-center">
             <nav className="flex gap-2">
-              <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-rugby-800 text-gray-400 hover:bg-rugby-700 hover:text-white transition-colors">1</button>
-              <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-rugby-900 text-gray-400 hover:bg-rugby-800 hover:text-white transition-colors">2</button>
-              <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-rugby-900 text-gray-400 hover:bg-rugby-800 hover:text-white transition-colors">3</button>
-              <span className="w-10 h-10 flex items-center justify-center text-gray-600">...</span>
-              <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-rugby-900 text-gray-400 hover:bg-rugby-800 hover:text-white transition-colors"><ChevronRight size={18} /></button>
+              {/* Previous Button */}
+              <button 
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="w-10 h-10 flex items-center justify-center rounded-lg bg-rugby-900 text-gray-400 hover:bg-rugby-800 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight size={18} className="rotate-180" />
+              </button>
+
+              {/* Page Numbers */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-all ${
+                    currentPage === page
+                      ? 'bg-rugby-accent text-white shadow-lg shadow-blue-900/50'
+                      : 'bg-rugby-900 text-gray-400 hover:bg-rugby-800 hover:text-white'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              {/* Next Button */}
+              <button 
+                onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="w-10 h-10 flex items-center justify-center rounded-lg bg-rugby-900 text-gray-400 hover:bg-rugby-800 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight size={18} />
+              </button>
             </nav>
           </div>
         )}

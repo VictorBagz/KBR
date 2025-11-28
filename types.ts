@@ -7,6 +7,8 @@ export interface NewsItem {
   category: string;
   timestamp: string;
   author: string;
+  featured?: boolean;
+  fullContent?: string; // Rich HTML content
 }
 
 export interface MatchEvent {
