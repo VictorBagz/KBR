@@ -141,7 +141,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
-      <div className={`bg-rugby-900 border border-rugby-800 rounded-2xl w-full shadow-2xl relative overflow-hidden transition-all duration-300 my-8 ${isSignUp ? 'max-w-2xl' : 'max-w-md'}`}>
+      <div className={`bg-rugby-900 border border-rugby-800 rounded-2xl w-full shadow-2xl relative overflow-hidden transition-all duration-300 my-8 flex flex-col ${isSignUp ? 'max-w-2xl h-[85vh]' : 'max-w-md'}`}>
         
         {/* Header */}
         <div className="p-6 border-b border-rugby-800 flex justify-between items-center bg-rugby-950/50">
@@ -162,7 +162,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Form */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-1">
           {error && (
             <div className="mb-6 p-3 bg-red-900/30 border border-red-800 text-red-200 text-sm rounded-lg flex items-start gap-2 animate-in fade-in">
               <AlertCircle size={16} className="shrink-0 mt-0.5" />
@@ -208,7 +208,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         className="w-full bg-rugby-950 border border-rugby-800 rounded-lg py-2 pl-8 pr-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-rugby-accent"
-                        placeholder="John"
+                        placeholder="Baguma"
                       />
                       <User className="absolute left-2.5 top-2.5 text-gray-600" size={14} />
                     </div>
@@ -231,7 +231,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       className="w-full bg-rugby-950 border border-rugby-800 rounded-lg py-2 px-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-rugby-accent"
-                      placeholder="Doe"
+                      placeholder="Victor"
                     />
                   </div>
                 </div>

@@ -18,6 +18,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
   const meta = user.user_metadata || {};
   const fullName = meta.first_name ? `${meta.first_name} ${meta.second_name || ''} ${meta.last_name}` : user.email?.split('@')[0];
   const initials = meta.first_name ? meta.first_name.charAt(0) : user.email?.charAt(0).toUpperCase();
+  
+  // Check if user is admin
+  const adminEmails = ['victorbaguma339@gmail.com', 'vibingdev5@gmail.com'];
+  const isAdmin = user.email && adminEmails.includes(user.email);
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
@@ -132,12 +136,14 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
 
           {/* Actions */}
           <div className="flex flex-wrap gap-3 mb-2">
-             <button 
-               onClick={() => onNavigate && onNavigate('admin')}
-               className="px-4 py-2 bg-rugby-accent hover:bg-blue-600 text-white rounded-lg font-medium text-sm transition-colors flex items-center gap-2 border border-blue-500 shadow-lg shadow-blue-900/20"
-             >
-               <LayoutDashboard size={16} /> Admin Dashboard
-             </button>
+             {isAdmin && (
+               <button 
+                 onClick={() => onNavigate && onNavigate('admin')}
+                 className="px-4 py-2 bg-rugby-accent hover:bg-blue-600 text-white rounded-lg font-medium text-sm transition-colors flex items-center gap-2 border border-blue-500 shadow-lg shadow-blue-900/20"
+               >
+                 <LayoutDashboard size={16} /> Admin Dashboard
+               </button>
+             )}
 
              <button className="px-4 py-2 bg-rugby-800 hover:bg-rugby-700 text-white rounded-lg font-medium text-sm transition-colors flex items-center gap-2 border border-rugby-700">
                <Settings size={16} /> Edit Profile
@@ -229,35 +235,6 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onNavigate }) => {
 
            {/* Middle Column: Recent Activity / Saved */}
            <div className="lg:col-span-2 space-y-6">
-              <div className="bg-rugby-900 rounded-xl border border-rugby-800 p-6">
-                 <div className="flex items-center justify-between mb-6">
-                   <h3 className="text-xl font-bold text-white">Saved Articles</h3>
-                   <button className="text-rugby-accent text-sm hover:underline">View All</button>
-                 </div>
-                 
-                 <div className="space-y-4">
-                    <div className="flex gap-4 p-4 rounded-lg bg-rugby-950/50 hover:bg-rugby-800 transition-colors cursor-pointer group">
-                       <div className="w-16 h-16 bg-gray-700 rounded-md overflow-hidden flex-shrink-0">
-                          <img src="https://picsum.photos/200/200?random=1" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
-                       </div>
-                       <div>
-                          <h4 className="text-white font-semibold line-clamp-1 group-hover:text-rugby-accent transition-colors">Tactical Analysis: How Ireland broke the Springbok defense</h4>
-                          <p className="text-gray-500 text-xs mt-1">Saved 2 days ago • Analysis</p>
-                       </div>
-                    </div>
-
-                    <div className="flex gap-4 p-4 rounded-lg bg-rugby-950/50 hover:bg-rugby-800 transition-colors cursor-pointer group">
-                       <div className="w-16 h-16 bg-gray-700 rounded-md overflow-hidden flex-shrink-0">
-                          <img src="https://picsum.photos/200/200?random=2" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
-                       </div>
-                       <div>
-                          <h4 className="text-white font-semibold line-clamp-1 group-hover:text-rugby-accent transition-colors">Exclusive: Interview with Antoine Dupont</h4>
-                          <p className="text-gray-500 text-xs mt-1">Saved 1 week ago • Interview</p>
-                       </div>
-                    </div>
-                 </div>
-              </div>
-
               <div className="bg-rugby-900 rounded-xl border border-rugby-800 p-6">
                  <h3 className="text-xl font-bold text-white mb-6">Account Settings</h3>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
