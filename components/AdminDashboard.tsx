@@ -789,36 +789,36 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
                                         </div>
                                      </div>
 
-                                     <div className="grid grid-cols-2 gap-8 relative">
+                                     <div className="grid grid-cols-2 gap-4 lg:gap-8 relative min-h-max">
                                         <div className="absolute inset-y-0 left-1/2 w-px bg-rugby-800 -translate-x-1/2 hidden md:block"></div>
                                         
                                         {/* Home Actions */}
-                                        <div className="space-y-3">
+                                        <div className="space-y-3 overflow-visible">
                                            <div className="text-xs font-bold text-center text-gray-500 uppercase">Home Actions</div>
                                            <button onClick={() => handleScore('home', 'TRY', 5)} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg shadow-lg shadow-blue-900/20 active:scale-95 transition-all border border-blue-500/50">TRY (+5)</button>
-                                           <div className="grid grid-cols-3 gap-2">
-                                              <button onClick={() => handleScore('home', 'CONVERSION', 2)} className="bg-blue-900/30 hover:bg-blue-800 text-blue-200 text-xs font-bold py-2 rounded-lg border border-blue-800 transition-colors">CON (+2)</button>
-                                              <button onClick={() => handleScore('home', 'PENALTY', 3)} className="bg-blue-900/30 hover:bg-blue-800 text-blue-200 text-xs font-bold py-2 rounded-lg border border-blue-800 transition-colors">PEN (+3)</button>
-                                              <button onClick={() => handleScore('home', 'DROP_GOAL', 3)} className="bg-blue-900/30 hover:bg-blue-800 text-blue-200 text-xs font-bold py-2 rounded-lg border border-blue-800 transition-colors">DG (+3)</button>
+                                           <div className="grid grid-cols-3 gap-2 w-full">
+                                              <button onClick={() => handleScore('home', 'CONVERSION', 2)} className="bg-blue-900/30 hover:bg-blue-800 text-blue-200 text-xs font-bold py-2 rounded-lg border border-blue-800 transition-colors w-full">CON (+2)</button>
+                                              <button onClick={() => handleScore('home', 'PENALTY', 3)} className="bg-blue-900/30 hover:bg-blue-800 text-blue-200 text-xs font-bold py-2 rounded-lg border border-blue-800 transition-colors w-full">PEN (+3)</button>
+                                              <button onClick={() => handleScore('home', 'DROP_GOAL', 3)} className="bg-blue-900/30 hover:bg-blue-800 text-blue-200 text-xs font-bold py-2 rounded-lg border border-blue-800 transition-colors w-full">DG (+3)</button>
                                            </div>
-                                           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-blue-800">
-                                              <button onClick={() => handleScore('home', 'YELLOW_CARD', 0)} className="bg-yellow-900/40 hover:bg-yellow-900/60 text-yellow-300 text-xs font-bold py-2 rounded-lg border border-yellow-700 transition-colors">🟨 YC</button>
-                                              <button onClick={() => handleScore('home', 'RED_CARD', 0)} className="bg-red-900/40 hover:bg-red-900/60 text-red-300 text-xs font-bold py-2 rounded-lg border border-red-700 transition-colors">🟥 RC</button>
+                                           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-blue-800 w-full">
+                                              <button onClick={() => handleScore('home', 'YELLOW_CARD', 0)} className="bg-yellow-900/40 hover:bg-yellow-900/60 text-yellow-300 text-xs font-bold py-2 px-1 rounded-lg border border-yellow-700 transition-colors w-full">🟨 YC</button>
+                                              <button onClick={() => handleScore('home', 'RED_CARD', 0)} className="bg-red-900/40 hover:bg-red-900/60 text-red-300 text-xs font-bold py-2 px-1 rounded-lg border border-red-700 transition-colors w-full">🟥 RC</button>
                                            </div>
                                         </div>
 
                                         {/* Away Actions */}
-                                        <div className="space-y-3">
+                                        <div className="space-y-3 overflow-visible">
                                            <div className="text-xs font-bold text-center text-gray-500 uppercase">Away Actions</div>
                                            <button onClick={() => handleScore('away', 'TRY', 5)} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg shadow-lg shadow-emerald-900/20 active:scale-95 transition-all border border-emerald-500/50">TRY (+5)</button>
-                                           <div className="grid grid-cols-3 gap-2">
-                                              <button onClick={() => handleScore('away', 'CONVERSION', 2)} className="bg-emerald-900/30 hover:bg-emerald-800 text-emerald-200 text-xs font-bold py-2 rounded-lg border border-emerald-800 transition-colors">CON (+2)</button>
-                                              <button onClick={() => handleScore('away', 'PENALTY', 3)} className="bg-emerald-900/30 hover:bg-emerald-800 text-emerald-200 text-xs font-bold py-2 rounded-lg border border-emerald-800 transition-colors">PEN (+3)</button>
-                                              <button onClick={() => handleScore('away', 'DROP_GOAL', 3)} className="bg-emerald-900/30 hover:bg-emerald-800 text-emerald-200 text-xs font-bold py-2 rounded-lg border border-emerald-800 transition-colors">DG (+3)</button>
+                                           <div className="grid grid-cols-3 gap-2 w-full">
+                                              <button onClick={() => handleScore('away', 'CONVERSION', 2)} className="bg-emerald-900/30 hover:bg-emerald-800 text-emerald-200 text-xs font-bold py-2 rounded-lg border border-emerald-800 transition-colors w-full">CON (+2)</button>
+                                              <button onClick={() => handleScore('away', 'PENALTY', 3)} className="bg-emerald-900/30 hover:bg-emerald-800 text-emerald-200 text-xs font-bold py-2 rounded-lg border border-emerald-800 transition-colors w-full">PEN (+3)</button>
+                                              <button onClick={() => handleScore('away', 'DROP_GOAL', 3)} className="bg-emerald-900/30 hover:bg-emerald-800 text-emerald-200 text-xs font-bold py-2 rounded-lg border border-emerald-800 transition-colors w-full">DG (+3)</button>
                                            </div>
-                                           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-emerald-800">
-                                              <button onClick={() => handleScore('away', 'YELLOW_CARD', 0)} className="bg-yellow-900/40 hover:bg-yellow-900/60 text-yellow-300 text-xs font-bold py-2 rounded-lg border border-yellow-700 transition-colors">🟨 YC</button>
-                                              <button onClick={() => handleScore('away', 'RED_CARD', 0)} className="bg-red-900/40 hover:bg-red-900/60 text-red-300 text-xs font-bold py-2 rounded-lg border border-red-700 transition-colors">🟥 RC</button>
+                                           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-emerald-800 w-full">
+                                              <button onClick={() => handleScore('away', 'YELLOW_CARD', 0)} className="bg-yellow-900/40 hover:bg-yellow-900/60 text-yellow-300 text-xs font-bold py-2 px-1 rounded-lg border border-yellow-700 transition-colors w-full">🟨 YC</button>
+                                              <button onClick={() => handleScore('away', 'RED_CARD', 0)} className="bg-red-900/40 hover:bg-red-900/60 text-red-300 text-xs font-bold py-2 px-1 rounded-lg border border-red-700 transition-colors w-full">🟥 RC</button>
                                            </div>
                                         </div>
                                      </div>
