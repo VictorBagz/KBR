@@ -300,7 +300,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
   };
 
   // --- Handlers: Live Match Scoring ---
-  const handleScore = async (side: 'home' | 'away', type: 'TRY' | 'CONVERSION' | 'PENALTY' | 'DROP_GOAL', points: number) => {
+  const handleScore = async (side: 'home' | 'away', type: 'TRY' | 'CONVERSION' | 'PENALTY' | 'DROP_GOAL' | 'YELLOW_CARD' | 'RED_CARD', points: number) => {
     if (!liveMatch) return;
     if (!scorerName) {
       alert("Please enter a player name first.");
@@ -626,6 +626,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
                            <td className="px-6 py-4 whitespace-nowrap">{match.venue}</td>
                            <td className="px-6 py-4 text-right">
                              <div className="flex items-center justify-end gap-2">
+                               {match.status !== 'UPCOMING' && (
+                                 <button 
+                                   onClick={() => handleEditFixture(match)}
+                                   className="px-2 py-1 text-xs bg-green-900/30 hover:bg-green-900/60 text-green-300 border border-green-700 rounded font-medium transition-colors"
+                                   title="Edit results"
+                                 >
+                                   Results
+                                 </button>
+                               )}
                                <button onClick={() => handleEditFixture(match)} className="p-1.5 hover:bg-rugby-700 rounded text-gray-400 hover:text-white"><Edit2 size={16} /></button>
                                <button onClick={() => handleDeleteFixture(match.id)} className="p-1.5 hover:bg-rugby-700 rounded text-red-400 hover:text-red-300"><Trash2 size={16} /></button>
                              </div>
@@ -792,6 +801,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
                                               <button onClick={() => handleScore('home', 'PENALTY', 3)} className="bg-blue-900/30 hover:bg-blue-800 text-blue-200 text-xs font-bold py-2 rounded-lg border border-blue-800 transition-colors">PEN (+3)</button>
                                               <button onClick={() => handleScore('home', 'DROP_GOAL', 3)} className="bg-blue-900/30 hover:bg-blue-800 text-blue-200 text-xs font-bold py-2 rounded-lg border border-blue-800 transition-colors">DG (+3)</button>
                                            </div>
+                                           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-blue-800">
+                                              <button onClick={() => handleScore('home', 'YELLOW_CARD', 0)} className="bg-yellow-900/40 hover:bg-yellow-900/60 text-yellow-300 text-xs font-bold py-2 rounded-lg border border-yellow-700 transition-colors">🟨 YC</button>
+                                              <button onClick={() => handleScore('home', 'RED_CARD', 0)} className="bg-red-900/40 hover:bg-red-900/60 text-red-300 text-xs font-bold py-2 rounded-lg border border-red-700 transition-colors">🟥 RC</button>
+                                           </div>
                                         </div>
 
                                         {/* Away Actions */}
@@ -802,6 +815,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
                                               <button onClick={() => handleScore('away', 'CONVERSION', 2)} className="bg-emerald-900/30 hover:bg-emerald-800 text-emerald-200 text-xs font-bold py-2 rounded-lg border border-emerald-800 transition-colors">CON (+2)</button>
                                               <button onClick={() => handleScore('away', 'PENALTY', 3)} className="bg-emerald-900/30 hover:bg-emerald-800 text-emerald-200 text-xs font-bold py-2 rounded-lg border border-emerald-800 transition-colors">PEN (+3)</button>
                                               <button onClick={() => handleScore('away', 'DROP_GOAL', 3)} className="bg-emerald-900/30 hover:bg-emerald-800 text-emerald-200 text-xs font-bold py-2 rounded-lg border border-emerald-800 transition-colors">DG (+3)</button>
+                                           </div>
+                                           <div className="grid grid-cols-2 gap-2 pt-2 border-t border-emerald-800">
+                                              <button onClick={() => handleScore('away', 'YELLOW_CARD', 0)} className="bg-yellow-900/40 hover:bg-yellow-900/60 text-yellow-300 text-xs font-bold py-2 rounded-lg border border-yellow-700 transition-colors">🟨 YC</button>
+                                              <button onClick={() => handleScore('away', 'RED_CARD', 0)} className="bg-red-900/40 hover:bg-red-900/60 text-red-300 text-xs font-bold py-2 rounded-lg border border-red-700 transition-colors">🟥 RC</button>
                                            </div>
                                         </div>
                                      </div>
@@ -824,7 +841,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
                                      <div key={ev.id} className="bg-rugby-950 p-3 rounded-lg border border-rugby-800 flex justify-between items-center group hover:border-rugby-700 transition-colors">
                                         <div>
                                            <div className={`text-xs font-bold mb-0.5 ${ev.team_side === 'home' ? 'text-blue-400' : 'text-emerald-400'}`}>
-                                              {ev.match_time}' {ev.event_type} (+{ev.points})
+                                              {ev.match_time}' {ev.event_type === 'YELLOW_CARD' ? '🟨 YC' : ev.event_type === 'RED_CARD' ? '🟥 RC' : ev.event_type} {ev.points > 0 ? `(+${ev.points})` : ''}
                                            </div>
                                            <div className="text-white text-sm font-medium">{ev.player_name}</div>
                                         </div>
@@ -1076,14 +1093,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
                       </div>
 
                       {(fixtureForm.status === 'FINISHED' || fixtureForm.status === 'LIVE' || fixtureForm.status === 'HALFTIME') && (
-                         <div className="grid grid-cols-2 gap-4 p-4 bg-rugby-950/50 rounded border border-rugby-800">
+                         <div className="grid grid-cols-2 gap-4 p-6 bg-rugby-950/50 rounded-lg border-2 border-rugby-accent/30 shadow-lg">
                             <div className="text-center">
-                               <label className="text-xs text-gray-400 block mb-1">Home Score</label>
-                               <input type="number" className="w-20 bg-rugby-900 border border-rugby-700 p-2 text-center rounded text-white text-lg font-bold" value={fixtureForm.home_score} onChange={e=>setFixtureForm({...fixtureForm, home_score: parseInt(e.target.value) || 0})} />
+                               <label className="text-xs text-gray-400 block mb-2 font-bold uppercase">Home Score</label>
+                               <input 
+                                 type="number" 
+                                 min="0"
+                                 className="w-full bg-rugby-900 border-2 border-blue-600 p-3 text-center rounded text-white text-2xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                 value={fixtureForm.home_score} 
+                                 onChange={e=>setFixtureForm({...fixtureForm, home_score: parseInt(e.target.value) || 0})} 
+                               />
                             </div>
                             <div className="text-center">
-                               <label className="text-xs text-gray-400 block mb-1">Away Score</label>
-                               <input type="number" className="w-20 bg-rugby-900 border border-rugby-700 p-2 text-center rounded text-white text-lg font-bold" value={fixtureForm.away_score} onChange={e=>setFixtureForm({...fixtureForm, away_score: parseInt(e.target.value) || 0})} />
+                               <label className="text-xs text-gray-400 block mb-2 font-bold uppercase">Away Score</label>
+                               <input 
+                                 type="number" 
+                                 min="0"
+                                 className="w-full bg-rugby-900 border-2 border-emerald-600 p-3 text-center rounded text-white text-2xl font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500" 
+                                 value={fixtureForm.away_score} 
+                                 onChange={e=>setFixtureForm({...fixtureForm, away_score: parseInt(e.target.value) || 0})} 
+                               />
                             </div>
                          </div>
                       )}

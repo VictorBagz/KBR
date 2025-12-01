@@ -96,12 +96,26 @@ export const MatchCenter: React.FC<MatchCenterProps> = ({ onNavigate }) => {
         return timeB - timeA;
       });
     
-    return sortedEvents.map(e => (
-      <div key={e.id} className="text-xs text-gray-400 animate-in slide-in-from-bottom-1 max-w-full px-1">
-         <span className="text-white font-medium truncate block">{e.player_name}</span> 
-         <span className="opacity-70 text-[10px]">{e.match_time} ({e.event_type === 'CONVERSION' ? 'Con' : e.event_type === 'PENALTY' ? 'Pen' : 'Try'})</span>
-      </div>
-    ));
+    return sortedEvents.map(e => {
+      const eventIcon = e.event_type === 'YELLOW_CARD' ? '🟨' : 
+                        e.event_type === 'RED_CARD' ? '🟥' : 
+                        e.event_type === 'CONVERSION' ? '✓' : 
+                        e.event_type === 'PENALTY' ? 'P' : 
+                        e.event_type === 'DROP_GOAL' ? 'D' : 'T';
+      
+      const eventLabel = e.event_type === 'YELLOW_CARD' ? 'YC' : 
+                         e.event_type === 'RED_CARD' ? 'RC' : 
+                         e.event_type === 'CONVERSION' ? 'Con' : 
+                         e.event_type === 'PENALTY' ? 'Pen' : 
+                         e.event_type === 'DROP_GOAL' ? 'DG' : 'Try';
+      
+      return (
+        <div key={e.id} className="text-xs text-gray-400 animate-in slide-in-from-bottom-1 max-w-full px-1">
+           <span className="text-white font-medium truncate block">{eventIcon} {e.player_name}</span> 
+           <span className="opacity-70 text-[10px]">{e.match_time} ({eventLabel})</span>
+        </div>
+      );
+    });
   };
 
   // Determine if the match is actually "Live" for the viewer

@@ -16,7 +16,7 @@ export interface MatchEvent {
   live_match_id: string;
   team_side: 'home' | 'away';
   player_name: string;
-  event_type: 'TRY' | 'CONVERSION' | 'PENALTY' | 'DROP_GOAL';
+  event_type: 'TRY' | 'CONVERSION' | 'PENALTY' | 'DROP_GOAL' | 'YELLOW_CARD' | 'RED_CARD';
   points: number;
   match_time: string;
 }
