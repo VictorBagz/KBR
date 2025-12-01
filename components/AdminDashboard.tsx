@@ -806,8 +806,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
                                               <button onClick={() => handleScore('home', 'DROP_GOAL', 3)} className="bg-blue-900/30 hover:bg-blue-800 text-blue-200 text-xs font-bold py-2 rounded-lg border border-blue-800 transition-colors w-full">DG (+3)</button>
                                            </div>
                                            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-blue-800 w-full">
-                                              <button onClick={() => handleScore('home', 'YELLOW_CARD', 0)} className="bg-yellow-900/40 hover:bg-yellow-900/60 text-yellow-300 text-xs font-bold py-2 px-1 rounded-lg border border-yellow-700 transition-colors w-full">🟨 YC</button>
-                                              <button onClick={() => handleScore('home', 'RED_CARD', 0)} className="bg-red-900/40 hover:bg-red-900/60 text-red-300 text-xs font-bold py-2 px-1 rounded-lg border border-red-700 transition-colors w-full">🟥 RC</button>
+                                              <button onClick={() => handleScore('home', 'YELLOW_CARD', 0)} className="bg-yellow-900/40 hover:bg-yellow-900/60 text-yellow-300 text-xs font-bold py-2 px-1 rounded-lg border border-yellow-700 transition-colors w-full flex items-center justify-center gap-1">
+                                                <div className="w-3 h-4 bg-yellow-400 rounded-sm"></div> YC
+                                              </button>
+                                              <button onClick={() => handleScore('home', 'RED_CARD', 0)} className="bg-red-900/40 hover:bg-red-900/60 text-red-300 text-xs font-bold py-2 px-1 rounded-lg border border-red-700 transition-colors w-full flex items-center justify-center gap-1">
+                                                <div className="w-3 h-4 bg-red-500 rounded-sm"></div> RC
+                                              </button>
                                            </div>
                                         </div>
 
@@ -821,8 +825,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
                                               <button onClick={() => handleScore('away', 'DROP_GOAL', 3)} className="bg-emerald-900/30 hover:bg-emerald-800 text-emerald-200 text-xs font-bold py-2 rounded-lg border border-emerald-800 transition-colors w-full">DG (+3)</button>
                                            </div>
                                            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-emerald-800 w-full">
-                                              <button onClick={() => handleScore('away', 'YELLOW_CARD', 0)} className="bg-yellow-900/40 hover:bg-yellow-900/60 text-yellow-300 text-xs font-bold py-2 px-1 rounded-lg border border-yellow-700 transition-colors w-full">🟨 YC</button>
-                                              <button onClick={() => handleScore('away', 'RED_CARD', 0)} className="bg-red-900/40 hover:bg-red-900/60 text-red-300 text-xs font-bold py-2 px-1 rounded-lg border border-red-700 transition-colors w-full">🟥 RC</button>
+                                              <button onClick={() => handleScore('away', 'YELLOW_CARD', 0)} className="bg-yellow-900/40 hover:bg-yellow-900/60 text-yellow-300 text-xs font-bold py-2 px-1 rounded-lg border border-yellow-700 transition-colors w-full flex items-center justify-center gap-1">
+                                                <div className="w-3 h-4 bg-yellow-400 rounded-sm"></div> YC
+                                              </button>
+                                              <button onClick={() => handleScore('away', 'RED_CARD', 0)} className="bg-red-900/40 hover:bg-red-900/60 text-red-300 text-xs font-bold py-2 px-1 rounded-lg border border-red-700 transition-colors w-full flex items-center justify-center gap-1">
+                                                <div className="w-3 h-4 bg-red-500 rounded-sm"></div> RC
+                                              </button>
                                            </div>
                                         </div>
                                      </div>

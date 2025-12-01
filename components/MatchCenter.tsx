@@ -97,11 +97,18 @@ export const MatchCenter: React.FC<MatchCenterProps> = ({ onNavigate }) => {
       });
     
     return sortedEvents.map(e => {
-      const eventIcon = e.event_type === 'YELLOW_CARD' ? '🟨' : 
-                        e.event_type === 'RED_CARD' ? '🟥' : 
-                        e.event_type === 'CONVERSION' ? '✓' : 
-                        e.event_type === 'PENALTY' ? 'P' : 
-                        e.event_type === 'DROP_GOAL' ? 'D' : 'T';
+      // Use CSS colored boxes instead of emojis for better cross-platform compatibility
+      const getEventIcon = () => {
+        if (e.event_type === 'YELLOW_CARD') {
+          return <div className="inline-block w-3 h-4 bg-yellow-400 rounded-sm mr-1"></div>;
+        }
+        if (e.event_type === 'RED_CARD') {
+          return <div className="inline-block w-3 h-4 bg-red-500 rounded-sm mr-1"></div>;
+        }
+        return e.event_type === 'CONVERSION' ? '✓' : 
+               e.event_type === 'PENALTY' ? 'P' : 
+               e.event_type === 'DROP_GOAL' ? 'D' : 'T';
+      };
       
       const eventLabel = e.event_type === 'YELLOW_CARD' ? 'YC' : 
                          e.event_type === 'RED_CARD' ? 'RC' : 
@@ -111,7 +118,9 @@ export const MatchCenter: React.FC<MatchCenterProps> = ({ onNavigate }) => {
       
       return (
         <div key={e.id} className="text-xs text-gray-400 animate-in slide-in-from-bottom-1 max-w-full px-1">
-           <span className="text-white font-medium truncate block">{eventIcon} {e.player_name}</span> 
+           <span className="text-white font-medium truncate block flex items-center">
+             {getEventIcon()} {e.player_name}
+           </span> 
            <span className="opacity-70 text-[10px]">{e.match_time} ({eventLabel})</span>
         </div>
       );
