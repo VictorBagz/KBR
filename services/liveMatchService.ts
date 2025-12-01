@@ -131,16 +131,18 @@ export const addScoringEvent = async (
 
   if (eventError) throw eventError;
 
-  // 2. Update the main score
-  const newScore = currentScore + event.points;
-  const updatePayload = side === 'home' ? { home_score: newScore } : { away_score: newScore };
+  // 2. Update the main score only if points > 0 (skip for cards)
+  if (event.points > 0) {
+    const newScore = currentScore + event.points;
+    const updatePayload = side === 'home' ? { home_score: newScore } : { away_score: newScore };
 
-  const { error: scoreError } = await supabase
-    .from('live_matches')
-    .update(updatePayload)
-    .eq('id', matchId);
+    const { error: scoreError } = await supabase
+      .from('live_matches')
+      .update(updatePayload)
+      .eq('id', matchId);
 
-  if (scoreError) throw scoreError;
+    if (scoreError) throw scoreError;
+  }
 };
 
 export const deleteMatchEvent = async (matchId: string, eventId: string, side: 'home' | 'away', points: number, currentTotalScore: number) => {

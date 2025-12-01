@@ -307,6 +307,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
       return;
     }
 
+    console.log(`Adding ${type} for ${side} team by ${scorerName}`, { points, matchTime });
+
     const newHomeScore = side === 'home' ? liveMatch.home_score + points : liveMatch.home_score;
     const newAwayScore = side === 'away' ? liveMatch.away_score + points : liveMatch.away_score;
     
@@ -331,15 +333,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onNavigate }) =>
     setScorerName(''); 
 
     try {
+      console.log(`Saving event to database...`);
       await addScoringEvent(liveMatch.id, side, side === 'home' ? liveMatch.home_score : liveMatch.away_score, {
         player_name: nameToSave,
         event_type: type,
         points: points,
         match_time: matchTime
       });
+      console.log(`Event saved successfully`);
       refreshLiveMatch();
     } catch (e) {
-      console.error(e);
+      console.error('Error saving event:', e);
       alert('Failed to save score. Please refresh.');
     }
   };
